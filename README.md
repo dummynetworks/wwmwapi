@@ -4,9 +4,11 @@
 
 WWMWAPI is an experimental, JavaScript-based structured mail exchange system.
 
-WWMWAPI is an independent mail exchange network. A message sent through WWMWAPI is intended for a recipient address that is served by the WWMWAPI system. The sender and recipient must both participate in the WWMWAPI mail system for native WWMWAPI delivery to take place.
+WWMWAPI is an independent mail exchange network. Native WWMWAPI delivery is intended for recipient addresses served by the WWMWAPI system.
 
-WWMWAPI does not natively deliver to ordinary traditional MX/SMTP mail addresses. It is **not an SMTP implementation**, and it does not share the protocol or message model of traditional Internet Mail Exchange (MX). Sending between the two systems would require an explicit, separately designed translator; automatic cross-system conversion or SMTP fallback is not part of native WWMWAPI behavior.
+WWMWAPI does not natively speak the protocols or message models of other mail systems. However, a separately installed and configured translator can convert and forward messages between WWMWAPI and another supported mail system. With an appropriate translator available for the destination system, a WWMWAPI user can send beyond the native WWMWAPI network. The translator's supported systems and capabilities determine which external destinations are reachable.
+
+Without a suitable translator, an ordinary address belonging to another mail system is not a native WWMWAPI destination. There is no implicit protocol conversion or automatic SMTP fallback in the WWMWAPI core.
 
 ## Project status
 
@@ -38,7 +40,7 @@ No message submission or delivery endpoint is implemented yet.
 
 - WWMWAPI defines and operates its own structured mail exchange model and network.
 - Native WWMWAPI delivery is for recipient addresses served by the WWMWAPI system.
-- Traditional MX/SMTP remains a separate mail system and address space.
-- No automatic SMTP fallback or implicit cross-system translation is provided.
-- Any cross-system translation belongs in a separate component, not inside the WWMWAPI core.
+- Other mail systems remain separate and use their own address and message models.
+- Interoperability is possible through a separately installed and configured translator that supports the destination system.
+- Translation is not built implicitly into the WWMWAPI core.
 - The current implementation is an early development scaffold, not a production mail service.
