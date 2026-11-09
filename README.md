@@ -18,13 +18,23 @@ WWMWAPI is intended to work without requiring an operator to keep a conventional
 
 This event-driven model is intended to reduce idle infrastructure and make WWMWAPI practical for small deployments and variable traffic. Actual cost depends on request volume, CPU time, storage, network transfer, and any supporting services. Serverless does not mean unlimited or automatically free; deployments must stay within platform quotas and budget.
 
+## Hybrid message representation
+
+WWMWAPI is adopting a hybrid message-format direction:
+
+- a WWMWAPI-defined JSON exchange envelope for protocol-level routing, peer exchange, and control information;
+- an RFC 5322 / MIME message payload to retain compatibility with established Internet message content and attachments;
+- WWMWAPI-defined extension metadata for capabilities that are not represented by the traditional message format.
+
+This is an architectural direction, not a finalized wire format. Exact JSON fields, payload encoding, extension namespaces, and preservation rules are still under design. See [Message Format](docs/message-format.md).
+
 ## Native exchange
 
 Native WWMWAPI delivery is intended for recipient addresses served by the WWMWAPI system.
 
 A sender's WWMWAPI node resolves the recipient's WWMWAPI destination and sends an exchange request to the receiving node. The receiving node validates and processes the request according to the WWMWAPI protocol.
 
-The exact address syntax, peer discovery, routing, message schema, authentication, and delivery acknowledgements remain under design.
+The exact address syntax, peer discovery, routing, JSON envelope schema, MIME payload encoding, authentication, and delivery acknowledgements remain under design.
 
 ## Translator extension
 
@@ -63,7 +73,7 @@ Communication with traditional MX/SMTP systems is handled through a translator e
 
 ## Project status
 
-The repository is at the initial foundation stage. The current Node.js HTTP service exposes only basic service and health information. The WWMWAPI message format, addressing model, peer discovery, routing rules, authentication model, delivery semantics, Cloudflare Worker adapter, and Translator API contract have not yet been finalized.
+The repository is at the initial foundation stage. The current Node.js HTTP service exposes only basic service and health information. The WWMWAPI JSON envelope, MIME payload encoding, extension metadata, addressing model, peer discovery, routing rules, authentication model, delivery semantics, Cloudflare Worker adapter, and Translator API contract have not yet been finalized.
 
 ## Development
 
