@@ -9,30 +9,42 @@ This roadmap is provisional and may change as the protocol is designed.
 - [x] Add service metadata and health routes.
 - [x] Add automated tests for the initial routes.
 
-## 1. Protocol definition
+## 1. HTTP-native protocol definition
 
 - [ ] Define the WWMWAPI message envelope.
+- [ ] Define request and response semantics for a peer exchange.
 - [ ] Define addressing and recipient representation.
-- [ ] Define how WWMWAPI addresses are distinguished from addresses in other mail systems.
-- [ ] Define WWMWAPI server discovery and recipient routing.
+- [ ] Define peer identity and endpoint representation.
+- [ ] Define address-to-peer discovery and routing.
 - [ ] Define message identifiers and schema versioning.
-- [ ] Define exchange acknowledgement and failure semantics.
-- [ ] Define authentication and authorization requirements.
+- [ ] Define authentication, authorization, and trust requirements.
+- [ ] Define acknowledgement, rejection, and delivery-state semantics.
 
-## 2. First native exchange implementation
+## 2. First native peer exchange implementation
 
 - [ ] Implement validation against the agreed message schema.
-- [ ] Implement the first native WWMWAPI exchange operation.
+- [ ] Implement inbound HTTP Request handling for peer exchange.
+- [ ] Implement outbound peer communication using fetch().
 - [ ] Enforce the native WWMWAPI recipient boundary.
 - [ ] Add protocol-level tests and examples.
 
-## 3. Reliable native delivery
+## 3. Cloudflare Workers runtime
 
-- [ ] Define routing behavior between WWMWAPI servers.
-- [ ] Add durable storage and queue processing.
-- [ ] Define retry, duplicate handling, and delivery status.
+- [ ] Add a Cloudflare Workers entrypoint/adapter.
+- [ ] Implement the WWMWAPI fetch(request) handler.
+- [ ] Implement outbound peer exchange using the Workers Fetch API.
+- [ ] Define use of Service Bindings versus public peer HTTP endpoints.
+- [ ] Document Cloudflare-specific request, subrequest, and payload limits.
+- [ ] Add Worker runtime tests.
 
-## 4. Translator extension and interoperability
+## 4. Reliable native delivery
+
+- [ ] Define durable message acceptance and delivery states.
+- [ ] Add persistent storage and queue processing.
+- [ ] Define retry, timeout, and duplicate handling.
+- [ ] Define attachment storage and transfer limits.
+
+## 5. Translator extension and interoperability
 
 - [ ] Define the WWMWAPI integration boundary for translators.
 - [ ] Define inbound translator capabilities and external-to-WWMWAPI recipient mapping.
@@ -46,7 +58,14 @@ This roadmap is provisional and may change as the protocol is designed.
 - [ ] Implement an Official Translator with inbound and outbound support.
 - [ ] Add tests for inbound and outbound interoperability.
 
-## 5. Operational readiness
+## 6. Optional traditional MX listener
+
+- [ ] Specify the Node.js-only `webportrender` behavior.
+- [ ] Define the three-attempt bind behavior and restart reset semantics.
+- [ ] Keep the TCP 25 listener isolated from native HTTP exchange.
+- [ ] Document external reachability checks separately from local port binding.
+
+## 7. Operational readiness
 
 - [ ] Add security hardening and abuse controls.
 - [ ] Add observability and operational documentation.
