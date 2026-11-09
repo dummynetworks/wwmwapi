@@ -23,7 +23,21 @@ On Cloudflare Workers, this design maps to the Worker's `fetch(request, env, ctx
 
 This is not SMTP tunneled through HTTP. The WWMWAPI exchange protocol is native to WWMWAPI.
 
-## 3. Peer-to-peer server model
+## 3. Serverless-first execution model
+
+WWMWAPI is intended to operate without requiring every node operator to maintain an application server process 24 hours a day.
+
+In an event-driven serverless runtime:
+- the platform exposes the node's HTTP endpoint;
+- an incoming peer request invokes the node's handler;
+- the handler processes the exchange and returns a response;
+- the operator does not need to keep an application process idling just to hold open a TCP listening socket.
+
+This is an execution and deployment model, not a guarantee that every platform component sleeps or that every deployment has zero idle cost. Storage, queues, databases, networking, scheduled work, and other supporting services may have separate quotas and charges.
+
+The project aims to keep routine exchange work lightweight and request-driven so that small or intermittent deployments do not require a permanently running mail-server machine.
+
+## 4. Peer-to-peer server model
 
 WWMWAPI is intended to operate as a peer-to-peer style network of mail servers. A WWMWAPI node can receive exchange requests from peers and send requests to other peers. It does not require every native message to pass through a traditional centralized SMTP relay.
 
@@ -31,7 +45,7 @@ A sender's node must determine the WWMWAPI server responsible for the recipient 
 
 The precise peer discovery, address-to-server resolution, trust model, and routing algorithm are still open design decisions. The term peer-to-peer describes the intended server-to-server relationship; it does not imply that discovery, identity, or coordination requirements have already been solved.
 
-## 4. Native exchange boundary
+## 5. Native exchange boundary
 
 Native WWMWAPI delivery is for recipient addresses served by the WWMWAPI system.
 
@@ -44,7 +58,7 @@ Native WWMWAPI delivery is for recipient addresses served by the WWMWAPI system.
 
 The exact address syntax, message envelope, routing behavior, response semantics, and delivery acknowledgements remain open protocol decisions.
 
-## 5. Cloudflare Workers as a native runtime
+## 6. Cloudflare Workers as a native runtime
 
 Cloudflare Workers are a first-class target for the HTTP-native WWMWAPI model:
 
@@ -57,7 +71,7 @@ A Cloudflare Worker does not need to bind TCP port 25 to participate in native W
 
 The current repository's Node.js HTTP server is only an initial scaffold. A Cloudflare Worker entrypoint/adapter and the WWMWAPI exchange handlers have not yet been implemented.
 
-## 6. Translator extension: bidirectional interoperability
+## 7. Translator extension: bidirectional interoperability
 
 A translator is an optional extension that strengthens both the receiving and sending capabilities of a WWMWAPI deployment. It connects two otherwise independent mail systems by explicitly translating their addressing, message representations, and exchange behavior.
 
@@ -84,7 +98,7 @@ The public Translator API documentation must define:
 
 The Translator API contract is not yet finalized. No endpoint names, payload fields, or authentication scheme should be assumed stable.
 
-## 7. Separation rules
+## 8. Separation rules
 
 - WWMWAPI's native transport is HTTP request/response, not SMTP.
 - WWMWAPI owns its native message model, address space, peer routing, and exchange semantics.
@@ -94,7 +108,7 @@ The Translator API contract is not yet finalized. No endpoint names, payload fie
 - Custom translators are allowed when they comply with the published Translator API.
 - No external protocol conversion should be assumed unless a compatible translator is configured.
 
-## 8. Open protocol decisions
+## 9. Open protocol decisions
 
 The following remain intentionally undecided:
 
