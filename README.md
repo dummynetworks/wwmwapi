@@ -27,6 +27,10 @@ The Translator API documentation is intended to describe the integration contrac
 
 WWMWAPI does not natively speak the protocols or message models of other mail systems. Translation is an explicit extension capability, not an implicit behavior of the WWMWAPI core. Without a suitable translator, native WWMWAPI delivery remains limited to addresses served by WWMWAPI.
 
+## Deployment guides
+
+- [Cloudflare Deployment Guide](docs/cloudflare-deployment.md) — Cloudflare DNS, DNS-only mail hostnames, Spectrum, Tunnel, and Workers distinctions for self-hosted Node.js deployments.
+
 ## Project status
 
 The repository is at the initial foundation stage. The HTTP service currently exposes only basic service and health information. The WWMWAPI message format, addressing model, network/server discovery, routing rules, authentication model, delivery semantics, and Translator API contract have not yet been finalized.
