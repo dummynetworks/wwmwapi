@@ -39,6 +39,25 @@ A WWMWAPI message addressed to an external system can be handed to a translator.
 
 Outbound delivery therefore requires a translator that supports the destination system and has a valid delivery path.
 
+### Official and custom translators
+
+The WWMWAPI project recommends an Official Translator for users who prefer a project-maintained implementation.
+
+The Official Translator is not mandatory. Independent developers and service operators may build their own translator implementations. A custom translator is compatible when it follows the published Translator API contract and applicable compatibility requirements.
+
+The public Translator API documentation must make independent implementation practical. It should define, once agreed:
+
+- translator-to-WWMWAPI and WWMWAPI-to-translator interaction boundaries;
+- inbound and outbound capability declarations;
+- message and address representations;
+- authentication, authorization, and trust requirements;
+- acceptance, rejection, acknowledgement, and delivery-status behavior;
+- error formats, retry behavior, and duplicate handling;
+- version negotiation and compatibility guarantees;
+- conformance tests and example implementations.
+
+The API contract is not yet finalized. No endpoint names, payload fields, or authentication scheme should be assumed stable until specified in the protocol documentation.
+
 ### Translator boundaries
 
 - The translator is separate from the WWMWAPI core and is not required for native WWMWAPI exchange.
@@ -65,7 +84,8 @@ These are architectural areas, not implemented features:
 - Traditional MX/SMTP behavior does not belong in the WWMWAPI core.
 - A translator is a separate extension that may be attached to a WWMWAPI deployment or gateway.
 - Inbound and outbound translation are separate capabilities and must be handled explicitly.
-- Translation is optional interoperability, not a prerequisite for native WWMWAPI operation.
+- The Official Translator is recommended, not required.
+- Custom translators are allowed when they comply with the published Translator API and compatibility requirements.
 - No external protocol conversion should be assumed unless a compatible translator is configured.
 
 ## Open protocol decisions
@@ -79,6 +99,7 @@ The following remain intentionally undecided:
 - inbound translator interface and recipient mapping
 - outbound translator interface and destination selection
 - translator registration, capability discovery, and trust
+- public Translator API versioning and conformance requirements
 - message identifiers and duplicate detection
 - submission and delivery operation semantics
 - synchronous versus asynchronous exchange behavior
