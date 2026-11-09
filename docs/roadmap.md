@@ -13,6 +13,8 @@ This roadmap is provisional and may change as the protocol is designed.
 
 - [ ] Define the WWMWAPI message envelope.
 - [ ] Define addressing and recipient representation.
+- [ ] Define how WWMWAPI addresses are distinguished from addresses in other mail systems.
+- [ ] Define WWMWAPI server discovery and recipient routing.
 - [ ] Define message identifiers and schema versioning.
 - [ ] Define exchange acknowledgement and failure semantics.
 - [ ] Define authentication and authorization requirements.
@@ -21,11 +23,12 @@ This roadmap is provisional and may change as the protocol is designed.
 
 - [ ] Implement validation against the agreed message schema.
 - [ ] Implement the first native WWMWAPI exchange operation.
+- [ ] Enforce the native WWMWAPI recipient boundary.
 - [ ] Add protocol-level tests and examples.
 
 ## 3. Reliable delivery
 
-- [ ] Define routing behavior.
+- [ ] Define routing behavior between WWMWAPI servers.
 - [ ] Add durable storage and queue processing.
 - [ ] Define retry, duplicate handling, and delivery status.
 
