@@ -40,7 +40,10 @@ This roadmap is provisional and may change as the protocol is designed.
 - [ ] Define translator registration, capability discovery, and trust boundaries.
 - [ ] Define message conversion rules for each supported external mail system.
 - [ ] Define acknowledgements, failures, retries, and delivery status across both directions.
-- [ ] Implement an MX/SMTP translator with inbound and outbound support.
+- [ ] Publish the complete Translator API developer documentation.
+- [ ] Define translator API versioning and compatibility requirements.
+- [ ] Provide conformance tests and example custom translator implementations.
+- [ ] Implement an Official Translator with inbound and outbound support.
 - [ ] Add tests for inbound and outbound interoperability.
 
 ## 5. Operational readiness
@@ -49,4 +52,4 @@ This roadmap is provisional and may change as the protocol is designed.
 - [ ] Add observability and operational documentation.
 - [ ] Evaluate deployment requirements.
 
-A translator is optional for native WWMWAPI exchange. When installed and configured, its inbound and outbound capabilities extend WWMWAPI to supported external mail systems.
+The Official Translator is recommended but optional. Custom translators are supported when they implement the published Translator API and compatibility requirements.
