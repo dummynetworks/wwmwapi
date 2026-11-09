@@ -12,6 +12,12 @@ Instead of requiring SMTP sockets, WWMWAPI makes HTTP requests the native server
 
 This creates a peer-to-peer style network of WWMWAPI servers that exchange structured mail over HTTP. WWMWAPI is not SMTP running on a different port: its message model, addressing, routing, and exchange rules are its own.
 
+## Serverless-first and cost-conscious operation
+
+WWMWAPI is intended to work without requiring an operator to keep a conventional mail-server process running 24 hours a day. In a serverless deployment, the hosting platform receives an HTTP request and invokes the WWMWAPI handler when work arrives. When no request is being handled, the operator does not need to maintain an always-running application process solely to keep a TCP listener alive.
+
+This event-driven model is intended to reduce idle infrastructure and make WWMWAPI practical for small deployments and variable traffic. Actual cost depends on request volume, CPU time, storage, network transfer, and any supporting services. Serverless does not mean unlimited or automatically free; deployments must stay within platform quotas and budget.
+
 ## Native exchange
 
 Native WWMWAPI delivery is intended for recipient addresses served by the WWMWAPI system.
