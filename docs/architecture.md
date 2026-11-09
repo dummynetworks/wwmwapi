@@ -1,109 +1,112 @@
 # WWMWAPI Architecture (Draft)
 
-**Status:** Draft. This document records system boundaries and planned responsibilities; it does not freeze the protocol.
+**Status:** Draft. This document records system boundaries and intended architecture; it does not freeze the protocol.
 
-## System identity
+## 1. System identity
 
 WWMWAPI is an independent, JavaScript-based structured mail exchange system.
 
-It is a separate mail network, not another name for traditional Mail Exchange (MX) and not an SMTP-compatible façade. WWMWAPI and traditional mail systems have different exchange models, address spaces, and message representations.
+It is not traditional Mail Exchange (MX), and it is not an SMTP-compatible façade. WWMWAPI has its own message model, addressing, routing, and exchange rules.
 
-## Native exchange boundary
+## 2. Reason for the HTTP-native design
+
+WWMWAPI is designed to operate in environments where an application cannot open an arbitrary public TCP port 25 listener, including serverless environments such as Cloudflare Workers.
+
+Rather than requiring SMTP sockets, WWMWAPI uses the HTTP request/response model as its native server-to-server transport:
+
+- A receiving WWMWAPI server exposes an HTTP endpoint.
+- The platform delivers an incoming HTTP `Request` to the server's request handler.
+- A sending WWMWAPI server uses `fetch()` to issue an exchange request to the receiving peer.
+- The receiving server processes the request and returns an HTTP `Response` under the WWMWAPI acknowledgement rules.
+
+On Cloudflare Workers, this design maps to the Worker's `fetch(request, env, ctx)` handler for inbound requests and the Fetch API for outbound HTTP requests.
+
+This is not SMTP tunneled through HTTP. The WWMWAPI exchange protocol is native to WWMWAPI.
+
+## 3. Peer-to-peer server model
+
+WWMWAPI is intended to operate as a peer-to-peer style network of mail servers. A WWMWAPI node can receive exchange requests from peers and send requests to other peers. It does not require every native message to pass through a traditional centralized SMTP relay.
+
+A sender's node must determine the WWMWAPI server responsible for the recipient and then address an exchange request to that peer.
+
+The precise peer discovery, address-to-server resolution, trust model, and routing algorithm are still open design decisions. The term peer-to-peer describes the intended server-to-server relationship; it does not imply that discovery, identity, or coordination requirements have already been solved.
+
+## 4. Native exchange boundary
 
 Native WWMWAPI delivery is for recipient addresses served by the WWMWAPI system.
 
 - A sender submits a message through a WWMWAPI-compatible mail service.
 - For native delivery, the recipient must have an address served by WWMWAPI.
-- WWMWAPI routes the message to the server responsible for that WWMWAPI recipient.
+- The sending node resolves the responsible WWMWAPI peer.
+- The sending node uses HTTP `fetch()` to send the exchange request.
+- The receiving node obtains the request through its HTTP request handler and processes it according to the WWMWAPI protocol.
 - An address belonging to another mail system is not automatically a native WWMWAPI destination.
-- The WWMWAPI core does not silently convert messages or fall back to another mail protocol.
 
-The exact address syntax, rules for identifying WWMWAPI addresses, and the mechanism for discovering the recipient's WWMWAPI server are still open protocol decisions.
+The exact address syntax, message envelope, routing behavior, response semantics, and delivery acknowledgements remain open protocol decisions.
 
-## Translator extension: bidirectional interoperability
+## 5. Cloudflare Workers as a native runtime
+
+Cloudflare Workers are a first-class target for the HTTP-native WWMWAPI model:
+
+- Inbound WWMWAPI operations arrive as HTTP requests and are handled by the Worker's `fetch()` handler.
+- Outbound WWMWAPI peer operations use the Fetch API.
+- Requests between Workers can use Cloudflare Service Bindings where the services are intentionally connected, or normal HTTP fetch to a peer's reachable endpoint.
+- Each peer still needs a well-defined identity, address, endpoint, authentication policy, and message validation rules.
+
+A Cloudflare Worker does not need to bind TCP port 25 to participate in native WWMWAPI exchange. The optional `webportrender` feature is a separate legacy/traditional-MX compatibility experiment for a Node.js runtime; it is not the WWMWAPI transport and cannot be assumed available in the Workers runtime.
+
+The current repository's Node.js HTTP server is only an initial scaffold. A Cloudflare Worker entrypoint/adapter and the WWMWAPI exchange handlers have not yet been implemented.
+
+## 6. Translator extension: bidirectional interoperability
 
 A translator is an optional extension that strengthens both the receiving and sending capabilities of a WWMWAPI deployment. It connects two otherwise independent mail systems by explicitly translating their addressing, message representations, and exchange behavior.
 
 ### Inbound: external mail system to WWMWAPI
 
-For example, an MX/SMTP message can enter through a translator. The translator receives the external message, maps its recipient to a valid WWMWAPI destination, converts the message into the WWMWAPI message model, and submits it for native WWMWAPI delivery.
-
-Inbound delivery therefore requires:
-- a translator that can receive from the external system;
-- an explicit mapping from the external recipient address to a WWMWAPI destination;
-- successful conversion and acceptance by the WWMWAPI side.
+For example, an MX/SMTP message can enter through a translator. The translator receives the external message, maps its recipient to a valid WWMWAPI destination, converts the message into the WWMWAPI message model, and submits it to a WWMWAPI node through the agreed integration interface.
 
 ### Outbound: WWMWAPI to external mail system
 
-A WWMWAPI message addressed to an external system can be handed to a translator. The translator maps the destination and converts the WWMWAPI message into the target system's message representation, then sends it through that system's exchange mechanism. For example, an MX/SMTP-capable translator can deliver to traditional Internet mail addresses.
-
-Outbound delivery therefore requires a translator that supports the destination system and has a valid delivery path.
+A WWMWAPI message addressed to an external system can be handed to a translator. The translator maps the destination, converts the WWMWAPI message into the target system's representation, and sends it through that system's exchange mechanism.
 
 ### Official and custom translators
 
-The WWMWAPI project recommends an Official Translator for users who prefer a project-maintained implementation.
+The WWMWAPI project recommends an Official Translator, but does not require it. Independent developers and service operators may build their own translators when they follow the published Translator API and compatibility requirements.
 
-The Official Translator is not mandatory. Independent developers and service operators may build their own translator implementations. A custom translator is compatible when it follows the published Translator API contract and applicable compatibility requirements.
-
-The public Translator API documentation must make independent implementation practical. It should define, once agreed:
-
-- translator-to-WWMWAPI and WWMWAPI-to-translator interaction boundaries;
-- inbound and outbound capability declarations;
+The public Translator API documentation must define:
+- inbound and outbound interaction boundaries;
+- capability declarations and supported external systems;
 - message and address representations;
-- authentication, authorization, and trust requirements;
-- acceptance, rejection, acknowledgement, and delivery-status behavior;
-- error formats, retry behavior, and duplicate handling;
-- version negotiation and compatibility guarantees;
-- conformance tests and example implementations.
+- authentication, authorization, and trust;
+- acceptance, rejection, acknowledgement, and delivery status;
+- error formats, retries, and duplicate handling;
+- versioning, compatibility, and conformance tests.
 
-The API contract is not yet finalized. No endpoint names, payload fields, or authentication scheme should be assumed stable until specified in the protocol documentation.
+The Translator API contract is not yet finalized. No endpoint names, payload fields, or authentication scheme should be assumed stable.
 
-### Translator boundaries
+## 7. Separation rules
 
-- The translator is separate from the WWMWAPI core and is not required for native WWMWAPI exchange.
-- A translator may implement inbound, outbound, or both directions; bidirectional support is an explicit capability.
-- Supported external systems, address mappings, conversion behavior, and delivery guarantees must be declared.
-- Translation must not silently treat different address spaces or message models as identical.
-- External delivery is possible only where a compatible translator and a working destination path exist; this is not universal compatibility by default.
-
-## Planned logical responsibilities
-
-These are architectural areas, not implemented features:
-
-1. **API surface** — accepts and exposes WWMWAPI operations.
-2. **Message model** — defines the structured representation of a WWMWAPI message.
-3. **Identity and authorization** — establishes who may submit, route, or access messages.
-4. **Address resolution and server discovery** — determines whether a recipient is on the WWMWAPI network and identifies the responsible server.
-5. **Exchange and delivery** — manages transfer, acceptance, rejection, and delivery state between WWMWAPI participants.
-6. **Persistence** — stores messages and the state needed to process them reliably.
-7. **Translator integration boundary** — provides a defined way for optional translators to exchange messages with the WWMWAPI core without merging the two systems.
-
-## Separation rules
-
-- The WWMWAPI core owns WWMWAPI-native messages, addresses, routing, and exchange behavior.
+- WWMWAPI's native transport is HTTP request/response, not SMTP.
+- WWMWAPI owns its native message model, address space, peer routing, and exchange semantics.
 - Traditional MX/SMTP behavior does not belong in the WWMWAPI core.
-- A translator is a separate extension that may be attached to a WWMWAPI deployment or gateway.
-- Inbound and outbound translation are separate capabilities and must be handled explicitly.
+- A translator is a separate optional extension.
 - The Official Translator is recommended, not required.
-- Custom translators are allowed when they comply with the published Translator API and compatibility requirements.
+- Custom translators are allowed when they comply with the published Translator API.
 - No external protocol conversion should be assumed unless a compatible translator is configured.
 
-## Open protocol decisions
+## 8. Open protocol decisions
 
 The following remain intentionally undecided:
 
 - canonical message envelope and schema versioning
 - sender and recipient addressing syntax
-- how an address is identified as belonging to WWMWAPI or another mail system
-- WWMWAPI server discovery and routing
-- inbound translator interface and recipient mapping
-- outbound translator interface and destination selection
-- translator registration, capability discovery, and trust
-- public Translator API versioning and conformance requirements
-- message identifiers and duplicate detection
-- submission and delivery operation semantics
-- synchronous versus asynchronous exchange behavior
-- acknowledgement, rejection, and retry rules
-- authentication and authorization
+- peer identity and endpoint representation
+- address-to-peer discovery and routing
+- request authentication, authorization, and peer trust
+- exchange acknowledgement and delivery-state semantics
+- synchronous versus asynchronous handoff
+- durable storage, queues, retry, and duplicate handling
 - attachment representation and size limits
-- error format and compatibility policy
+- HTTP error mapping and protocol-level error format
+- Cloudflare Worker adapter and runtime-specific persistence
+- Translator API versioning and conformance requirements
