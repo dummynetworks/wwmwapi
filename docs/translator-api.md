@@ -18,7 +18,19 @@ WWMWAPI and external mail systems have different address spaces, message models,
 
 The translator is an extension, not part of the WWMWAPI native exchange core. Native WWMWAPI exchange must remain usable without any translator installed.
 
-## 3. Directional capabilities
+## 3. Message representation boundary
+
+The selected WWMWAPI message-format direction is hybrid:
+
+- a WWMWAPI JSON exchange envelope;
+- an RFC 5322 / MIME message payload;
+- explicitly identified WWMWAPI extension metadata.
+
+The Translator API must define how these layers are presented to a translator and how external message formats are mapped into and out of them. The concrete JSON schema, payload encoding, and extension namespace rules are not finalized.
+
+A translator must not assume that the WWMWAPI exchange envelope is the same as an SMTP envelope, or that DNS MX records are a message format. It must map addressing, message content, and transport semantics explicitly.
+
+## 4. Directional capabilities
 
 A translator may declare one or both capabilities.
 
@@ -36,7 +48,7 @@ An outbound-capable translator is responsible for accepting an eligible WWMWAPI 
 
 Inbound and outbound support must be declared separately. A translator that supports one direction must not be assumed to support the other.
 
-## 4. Requirements for the published API contract
+## 5. Requirements for the published API contract
 
 The stable API specification must define all of the following.
 
@@ -44,7 +56,7 @@ The stable API specification must define all of the following.
 | --- | --- |
 | Registration and discovery | How a translator is registered, identified, and discovered |
 | Capability declaration | How inbound/outbound support and supported external systems are advertised |
-| Message envelope | The canonical WWMWAPI message structure exposed at the integration boundary |
+| Message envelope | The canonical WWMWAPI JSON exchange envelope and its relationship to the payload |
 | Address mapping | How source and destination addresses are represented and mapped |
 | Submission and acceptance | How messages are handed off and how acceptance is acknowledged |
 | Delivery status | How pending, accepted, delivered, rejected, and failed states are represented |
@@ -55,25 +67,27 @@ The stable API specification must define all of the following.
 | Versioning | API versions, compatibility policy, and deprecation rules |
 | Conformance | Test cases and required behavior for compatible implementations |
 
-## 5. Reliability and safety expectations
+## 6. Reliability and safety expectations
 
 The final contract should make it possible to distinguish message acceptance by the translator from final delivery by the external system. It should also define how temporary failures, permanent failures, retries, and duplicate submissions are handled.
 
 Translator implementations must validate external input, enforce configured destination mappings, protect credentials, and avoid claiming delivery when only local acceptance has occurred.
 
-## 6. Compatibility
+## 7. Compatibility
 
 A custom translator is not compatible merely because it can parse a sample message. It must follow the versioned API contract, declare its actual capabilities, and satisfy the published conformance tests.
 
 The Official Translator should use the same public contract available to third-party developers; it should not depend on undocumented privileged behavior.
 
-## 7. Items not yet specified
+## 8. Items not yet specified
 
 The following are deliberately left open until the WWMWAPI protocol and integration boundary are designed:
 
 - API base paths and endpoint names
 - HTTP methods and request/response schemas
-- canonical message and attachment formats
+- canonical WWMWAPI JSON envelope schema
+- RFC 5322/MIME payload encoding and attachment representation
+- WWMWAPI extension metadata schema and namespacing
 - authentication and authorization scheme
 - translator registration mechanism
 - synchronous or asynchronous handoff behavior
