@@ -19,26 +19,29 @@ This roadmap is provisional and may change as the protocol is designed.
 - [ ] Define exchange acknowledgement and failure semantics.
 - [ ] Define authentication and authorization requirements.
 
-## 2. First exchange implementation
+## 2. First native exchange implementation
 
 - [ ] Implement validation against the agreed message schema.
 - [ ] Implement the first native WWMWAPI exchange operation.
 - [ ] Enforce the native WWMWAPI recipient boundary.
 - [ ] Add protocol-level tests and examples.
 
-## 3. Reliable delivery
+## 3. Reliable native delivery
 
 - [ ] Define routing behavior between WWMWAPI servers.
 - [ ] Add durable storage and queue processing.
 - [ ] Define retry, duplicate handling, and delivery status.
 
-## 4. Translator interoperability
+## 4. Translator extension and interoperability
 
-- [ ] Define how the WWMWAPI core hands external-destination messages to a translator.
+- [ ] Define the WWMWAPI integration boundary for translators.
+- [ ] Define inbound translator capabilities and external-to-WWMWAPI recipient mapping.
+- [ ] Define outbound translator capabilities and WWMWAPI-to-external destination mapping.
 - [ ] Define translator registration, capability discovery, and trust boundaries.
-- [ ] Define explicit mapping between WWMWAPI messages and supported external mail systems.
-- [ ] Define failure reporting and delivery status across the translator boundary.
-- [ ] Implement a translator only after its target system and conversion rules are specified.
+- [ ] Define message conversion rules for each supported external mail system.
+- [ ] Define acknowledgements, failures, retries, and delivery status across both directions.
+- [ ] Implement an MX/SMTP translator with inbound and outbound support.
+- [ ] Add tests for inbound and outbound interoperability.
 
 ## 5. Operational readiness
 
@@ -46,4 +49,4 @@ This roadmap is provisional and may change as the protocol is designed.
 - [ ] Add observability and operational documentation.
 - [ ] Evaluate deployment requirements.
 
-A translator is optional for native WWMWAPI exchange, but enables interoperability with external mail systems when a compatible translator is installed and configured.
+A translator is optional for native WWMWAPI exchange. When installed and configured, its inbound and outbound capabilities extend WWMWAPI to supported external mail systems.
