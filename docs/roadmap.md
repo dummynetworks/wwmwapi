@@ -32,14 +32,18 @@ This roadmap is provisional and may change as the protocol is designed.
 - [ ] Add durable storage and queue processing.
 - [ ] Define retry, duplicate handling, and delivery status.
 
-## 4. Operational readiness
+## 4. Translator interoperability
+
+- [ ] Define how the WWMWAPI core hands external-destination messages to a translator.
+- [ ] Define translator registration, capability discovery, and trust boundaries.
+- [ ] Define explicit mapping between WWMWAPI messages and supported external mail systems.
+- [ ] Define failure reporting and delivery status across the translator boundary.
+- [ ] Implement a translator only after its target system and conversion rules are specified.
+
+## 5. Operational readiness
 
 - [ ] Add security hardening and abuse controls.
 - [ ] Add observability and operational documentation.
 - [ ] Evaluate deployment requirements.
 
-## Separate interoperability project
-
-- [ ] Specify a translator between WWMWAPI and traditional MX/SMTP, only if interoperability is required.
-
-The translator is not a prerequisite for WWMWAPI to operate as its own exchange system.
+A translator is optional for native WWMWAPI exchange, but enables interoperability with external mail systems when a compatible translator is installed and configured.
