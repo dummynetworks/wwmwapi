@@ -20,19 +20,32 @@ Native WWMWAPI delivery is for recipient addresses served by the WWMWAPI system.
 
 The exact address syntax, rules for identifying WWMWAPI addresses, and the mechanism for discovering the recipient's WWMWAPI server are still open protocol decisions.
 
-## Translator-based interoperability
+## Translator extension: bidirectional interoperability
 
-A separately installed and configured translator can connect WWMWAPI to another mail system.
+A translator is an optional extension that strengthens both the receiving and sending capabilities of a WWMWAPI deployment. It connects two otherwise independent mail systems by explicitly translating their addressing, message representations, and exchange behavior.
 
-Conceptually, the translator:
-1. Receives or is given a WWMWAPI message intended for an external address.
-2. Converts the message and relevant addressing information into the target system's representation.
-3. Transfers the converted message using that target system's exchange mechanism.
-4. Reports the outcome back through an agreed integration boundary.
+### Inbound: external mail system to WWMWAPI
 
-A translator can enable delivery beyond the native WWMWAPI network, including to traditional MX/SMTP addresses, provided that a translator supporting the destination system is available and configured.
+For example, an MX/SMTP message can enter through a translator. The translator receives the external message, maps its recipient to a valid WWMWAPI destination, converts the message into the WWMWAPI message model, and submits it for native WWMWAPI delivery.
 
-The translator is optional and separate from the WWMWAPI core. Its supported destinations, conversion rules, failure behavior, and deployment location must be explicit. "Anywhere" therefore means any destination system for which a compatible translator and a working delivery path exist; it does not imply universal compatibility by default.
+Inbound delivery therefore requires:
+- a translator that can receive from the external system;
+- an explicit mapping from the external recipient address to a WWMWAPI destination;
+- successful conversion and acceptance by the WWMWAPI side.
+
+### Outbound: WWMWAPI to external mail system
+
+A WWMWAPI message addressed to an external system can be handed to a translator. The translator maps the destination and converts the WWMWAPI message into the target system's message representation, then sends it through that system's exchange mechanism. For example, an MX/SMTP-capable translator can deliver to traditional Internet mail addresses.
+
+Outbound delivery therefore requires a translator that supports the destination system and has a valid delivery path.
+
+### Translator boundaries
+
+- The translator is separate from the WWMWAPI core and is not required for native WWMWAPI exchange.
+- A translator may implement inbound, outbound, or both directions; bidirectional support is an explicit capability.
+- Supported external systems, address mappings, conversion behavior, and delivery guarantees must be declared.
+- Translation must not silently treat different address spaces or message models as identical.
+- External delivery is possible only where a compatible translator and a working destination path exist; this is not universal compatibility by default.
 
 ## Planned logical responsibilities
 
@@ -44,13 +57,14 @@ These are architectural areas, not implemented features:
 4. **Address resolution and server discovery** — determines whether a recipient is on the WWMWAPI network and identifies the responsible server.
 5. **Exchange and delivery** — manages transfer, acceptance, rejection, and delivery state between WWMWAPI participants.
 6. **Persistence** — stores messages and the state needed to process them reliably.
+7. **Translator integration boundary** — provides a defined way for optional translators to exchange messages with the WWMWAPI core without merging the two systems.
 
 ## Separation rules
 
 - The WWMWAPI core owns WWMWAPI-native messages, addresses, routing, and exchange behavior.
 - Traditional MX/SMTP behavior does not belong in the WWMWAPI core.
-- A translator is a separate component that may be attached to a WWMWAPI deployment or gateway.
-- A translator must explicitly map differences between address spaces, message models, and delivery semantics.
+- A translator is a separate extension that may be attached to a WWMWAPI deployment or gateway.
+- Inbound and outbound translation are separate capabilities and must be handled explicitly.
 - Translation is optional interoperability, not a prerequisite for native WWMWAPI operation.
 - No external protocol conversion should be assumed unless a compatible translator is configured.
 
@@ -62,7 +76,8 @@ The following remain intentionally undecided:
 - sender and recipient addressing syntax
 - how an address is identified as belonging to WWMWAPI or another mail system
 - WWMWAPI server discovery and routing
-- how WWMWAPI hands an external-destination message to a translator
+- inbound translator interface and recipient mapping
+- outbound translator interface and destination selection
 - translator registration, capability discovery, and trust
 - message identifiers and duplicate detection
 - submission and delivery operation semantics
