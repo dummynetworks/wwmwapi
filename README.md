@@ -6,9 +6,18 @@ WWMWAPI is an experimental, JavaScript-based structured mail exchange system.
 
 WWMWAPI is an independent mail exchange network. Native WWMWAPI delivery is intended for recipient addresses served by the WWMWAPI system.
 
-WWMWAPI does not natively speak the protocols or message models of other mail systems. However, a separately installed and configured translator can convert and forward messages between WWMWAPI and another supported mail system. With an appropriate translator available for the destination system, a WWMWAPI user can send beyond the native WWMWAPI network. The translator's supported systems and capabilities determine which external destinations are reachable.
+## Translator extension
 
-Without a suitable translator, an ordinary address belonging to another mail system is not a native WWMWAPI destination. There is no implicit protocol conversion or automatic SMTP fallback in the WWMWAPI core.
+A translator is an optional extension that strengthens WWMWAPI's **receiving and sending capabilities** by enabling communication with other mail systems.
+
+A translator can support both directions:
+
+- **Inbound:** receive mail from another system, such as traditional MX/SMTP, translate it into the WWMWAPI message model, and deliver it to the corresponding WWMWAPI recipient.
+- **Outbound:** take a WWMWAPI message addressed to another system, translate it into that system's message and addressing model, and send it through the target system's exchange mechanism.
+
+With a compatible translator installed and configured, WWMWAPI users can exchange mail with supported external systems, including traditional MX/SMTP. Inbound delivery requires the translator to accept the external message and map its recipient to a valid WWMWAPI destination. Outbound delivery requires the translator to support the destination system.
+
+WWMWAPI does not natively speak the protocols or message models of other mail systems. Translation is an explicit extension capability, not an implicit behavior of the WWMWAPI core. Without a suitable translator, native WWMWAPI delivery remains limited to addresses served by WWMWAPI.
 
 ## Project status
 
@@ -41,6 +50,7 @@ No message submission or delivery endpoint is implemented yet.
 - WWMWAPI defines and operates its own structured mail exchange model and network.
 - Native WWMWAPI delivery is for recipient addresses served by the WWMWAPI system.
 - Other mail systems remain separate and use their own address and message models.
-- Interoperability is possible through a separately installed and configured translator that supports the destination system.
+- A translator is an optional extension for inbound and outbound interoperability.
+- Translator capabilities, supported systems, and address mappings must be explicit.
 - Translation is not built implicitly into the WWMWAPI core.
 - The current implementation is an early development scaffold, not a production mail service.
