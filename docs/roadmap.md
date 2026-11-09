@@ -11,7 +11,10 @@ This roadmap is provisional and may change as the protocol is designed.
 
 ## 1. HTTP-native protocol definition
 
-- [ ] Define the WWMWAPI message envelope.
+- [ ] Define the WWMWAPI JSON exchange envelope.
+- [ ] Define the RFC 5322/MIME payload representation and transport encoding.
+- [ ] Define WWMWAPI extension metadata and namespacing.
+- [ ] Define payload preservation and signature-safe transformation rules.
 - [ ] Define request and response semantics for a peer exchange.
 - [ ] Define addressing and recipient representation.
 - [ ] Define peer identity and endpoint representation.
