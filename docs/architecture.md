@@ -45,7 +45,34 @@ A sender's node must determine the WWMWAPI server responsible for the recipient 
 
 The precise peer discovery, address-to-server resolution, trust model, and routing algorithm are still open design decisions. The term peer-to-peer describes the intended server-to-server relationship; it does not imply that discovery, identity, or coordination requirements have already been solved.
 
-## 5. Native exchange boundary
+## 5. Hybrid message representation
+
+The selected architectural direction is a hybrid representation that combines a WWMWAPI-native exchange envelope with an established Internet message payload format.
+
+The conceptual layers are:
+
+1. **HTTP transport** — carries the exchange request between WWMWAPI peers using `Request`, `fetch()`, and `Response`.
+2. **WWMWAPI JSON Envelope** — carries WWMWAPI protocol-level information such as exchange control, routing context, peer-level metadata, and references to the message payload.
+3. **RFC 5322 / MIME Payload** — carries the conventional Internet message representation, including message headers, body structure, and attachments.
+4. **WWMWAPI Extension Metadata** — carries explicitly defined WWMWAPI-specific capabilities or metadata that do not belong in the conventional message payload.
+
+This direction aims to preserve compatibility with established email message content while allowing WWMWAPI to retain its own HTTP-native exchange behavior and add protocol-specific capabilities.
+
+### Important terminology
+
+DNS MX records are a mail-routing mechanism; they are not the message format. RFC 5322 defines Internet Message Format, and MIME extends that format for structured content and attachments. WWMWAPI's use of RFC 5322/MIME payloads does not make its native transport SMTP or make WWMWAPI itself a traditional MX server.
+
+### Design constraints
+
+- The WWMWAPI exchange envelope and the RFC 5322/MIME payload are distinct layers.
+- Routing and peer exchange semantics belong to the WWMWAPI envelope and protocol, not to assumptions about SMTP.
+- The conventional message payload should remain intact where possible. Any transformation that changes signed message content or headers must account for signature validity.
+- WWMWAPI-specific metadata must be explicitly identified and must not silently redefine standard message fields.
+- A translator maps between the WWMWAPI envelope, payload, and the target mail system's own exchange model.
+
+This is a selected architectural direction, not a finalized wire specification. Exact JSON fields, schema versioning, binary payload representation, MIME serialization, extension namespaces, and preservation requirements remain open.
+
+## 6. Native exchange boundary
 
 Native WWMWAPI delivery is for recipient addresses served by the WWMWAPI system.
 
@@ -58,7 +85,7 @@ Native WWMWAPI delivery is for recipient addresses served by the WWMWAPI system.
 
 The exact address syntax, message envelope, routing behavior, response semantics, and delivery acknowledgements remain open protocol decisions.
 
-## 6. Cloudflare Workers as a native runtime
+## 7. Cloudflare Workers as a native runtime
 
 Cloudflare Workers are a first-class target for the HTTP-native WWMWAPI model:
 
@@ -71,7 +98,7 @@ A Cloudflare Worker does not need to bind TCP port 25 to participate in native W
 
 The current repository's Node.js HTTP server is only an initial scaffold. A Cloudflare Worker entrypoint/adapter and the WWMWAPI exchange handlers have not yet been implemented.
 
-## 7. Translator extension: bidirectional interoperability
+## 8. Translator extension: bidirectional interoperability
 
 A translator is an optional extension that strengthens both the receiving and sending capabilities of a WWMWAPI deployment. It connects two otherwise independent mail systems by explicitly translating their addressing, message representations, and exchange behavior.
 
@@ -98,7 +125,7 @@ The public Translator API documentation must define:
 
 The Translator API contract is not yet finalized. No endpoint names, payload fields, or authentication scheme should be assumed stable.
 
-## 8. Separation rules
+## 9. Separation rules
 
 - WWMWAPI's native transport is HTTP request/response, not SMTP.
 - WWMWAPI owns its native message model, address space, peer routing, and exchange semantics.
@@ -108,11 +135,14 @@ The Translator API contract is not yet finalized. No endpoint names, payload fie
 - Custom translators are allowed when they comply with the published Translator API.
 - No external protocol conversion should be assumed unless a compatible translator is configured.
 
-## 9. Open protocol decisions
+## 10. Open protocol decisions
 
 The following remain intentionally undecided:
 
-- canonical message envelope and schema versioning
+- canonical WWMWAPI JSON exchange envelope and schema versioning
+- RFC 5322/MIME payload serialization and transport encoding
+- WWMWAPI extension metadata structure and namespacing
+- rules for preserving or transforming standard message content and signatures
 - sender and recipient addressing syntax
 - peer identity and endpoint representation
 - address-to-peer discovery and routing
