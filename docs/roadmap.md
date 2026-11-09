@@ -28,7 +28,15 @@ This roadmap is provisional and may change as the protocol is designed.
 - [ ] Enforce the native WWMWAPI recipient boundary.
 - [ ] Add protocol-level tests and examples.
 
-## 3. Cloudflare Workers runtime
+## 3. Serverless and cost-efficient operation
+
+- [ ] Define the request-driven lifecycle for WWMWAPI nodes.
+- [ ] Avoid designs that require an always-running process for native exchange.
+- [ ] Define durable-storage requirements separately from transient request handling.
+- [ ] Document platform quotas, execution limits, and cost-sensitive deployment profiles.
+- [ ] Test low-volume and intermittent traffic behavior.
+
+## 4. Cloudflare Workers runtime
 
 - [ ] Add a Cloudflare Workers entrypoint/adapter.
 - [ ] Implement the WWMWAPI fetch(request) handler.
@@ -37,14 +45,14 @@ This roadmap is provisional and may change as the protocol is designed.
 - [ ] Document Cloudflare-specific request, subrequest, and payload limits.
 - [ ] Add Worker runtime tests.
 
-## 4. Reliable native delivery
+## 5. Reliable native delivery
 
 - [ ] Define durable message acceptance and delivery states.
 - [ ] Add persistent storage and queue processing.
 - [ ] Define retry, timeout, and duplicate handling.
 - [ ] Define attachment storage and transfer limits.
 
-## 5. Translator extension and interoperability
+## 6. Translator extension and interoperability
 
 - [ ] Define the WWMWAPI integration boundary for translators.
 - [ ] Define inbound translator capabilities and external-to-WWMWAPI recipient mapping.
@@ -58,14 +66,14 @@ This roadmap is provisional and may change as the protocol is designed.
 - [ ] Implement an Official Translator with inbound and outbound support.
 - [ ] Add tests for inbound and outbound interoperability.
 
-## 6. Optional traditional MX listener
+## 7. Optional traditional MX listener
 
 - [ ] Specify the Node.js-only `webportrender` behavior.
 - [ ] Define the three-attempt bind behavior and restart reset semantics.
 - [ ] Keep the TCP 25 listener isolated from native HTTP exchange.
 - [ ] Document external reachability checks separately from local port binding.
 
-## 7. Operational readiness
+## 8. Operational readiness
 
 - [ ] Add security hardening and abuse controls.
 - [ ] Add observability and operational documentation.
